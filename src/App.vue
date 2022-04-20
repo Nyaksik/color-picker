@@ -22,7 +22,9 @@
       <div class="color-pick__canvas">
         <canvas ref="canvas" height="500px" width="500px" @click="clickHandler">
         </canvas>
-        <div ref="loupe" v-show="isMouseEnter"></div>
+        <div ref="loupe" v-show="isMouseEnter">
+          <canvas ref="canvasLoupe"></canvas>
+        </div>
       </div>
       <div class="colors">
         <p class="colors__descr">Кликните на фото, чтобы добавить цвет</p>
@@ -55,6 +57,7 @@ export default {
       isImage: false,
       isMouseEnter: false,
       loupe: '',
+      canvasLoupe: '',
       context: '',
       hex: '',
       colors: [],
@@ -63,6 +66,7 @@ export default {
   mounted() {
     this.loupe = this.$refs.loupe;
     this.canvas = this.$refs.canvas;
+    this.canvasLoupe = this.$refs.canvasLoupe;
     this.canvas.width = 500;
     this.canvas.height = 500;
     this.context = this.canvas.getContext('2d');
@@ -71,6 +75,7 @@ export default {
     loupeMove(e) {
       this.isMouseEnter = true;
 
+      const context = this.canvasLoupe.getContext('2d');
       const position = this.findPos(this.canvas);
       const x = Math.min(e.pageX - position.x, 500);
       const y = Math.min(e.pageY - position.y, 500);
@@ -81,6 +86,7 @@ export default {
 
       this.loupe.style.left = `${x - 10}px`;
       this.loupe.style.top = `${y + 15}px`;
+      context.drawImage(this.canvas, x - 10, y + 15, 16, 16, 0, 0, 100, 100);
     },
     removeColor(id) {
       this.colors = this.colors.filter((it) => it.id !== id);
@@ -243,6 +249,7 @@ $secondColor: #d2d2d2;
       position: absolute;
       top: 0;
       left: 0;
+      overflow: hidden;
 
       width: 16px;
       height: 16px;
