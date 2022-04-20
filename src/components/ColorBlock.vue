@@ -22,9 +22,12 @@ export default {
 </script>
 
 <style lang="scss">
+$primeColor: #2c2c2c;
+$secondColor: #6b6b6b;
+
 .color {
   position: relative;
-  width: 190px;
+  width: 180px;
 
   font-size: 14px;
   &__color {
@@ -34,14 +37,14 @@ export default {
     mask-repeat: no-repeat;
   }
   &__title {
-    border: rgba($color: #6b6b6b, $alpha: 0.2) 1px solid;
+    border: rgba($color: $secondColor, $alpha: 0.2) 1px solid;
 
-    color: #2c2c2c;
+    color: $primeColor;
 
     padding: 0 0 5px 5px;
     strong {
       font-weight: 500;
-      color: #6b6b6b;
+      color: $secondColor;
     }
   }
   &__trash {
@@ -56,7 +59,7 @@ export default {
     width: 30px;
     height: 30px;
 
-    background-color: #2c2c2c;
+    background-color: $primeColor;
     background-size: contain;
 
     border-radius: 8px;
