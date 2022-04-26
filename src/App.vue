@@ -19,12 +19,14 @@
       </div>
     </div>
     <div class="color-pick" @mousemove="loupeMove" v-show="isImage">
-      <div class="color-pick__canvas">
-        <canvas ref="canvas" height="500px" width="500px" @click="clickHandler">
-        </canvas>
-        <div ref="loupe" v-show="isMouseEnter">
-          <canvas ref="canvasLoupe"></canvas>
-        </div>
+      <div class="color-pick__canvas canvas">
+        <canvas
+          ref="canvas"
+          height="500px"
+          width="500px"
+          @click="clickHandler"
+        />
+        <canvas class="canvas__loupe" ref="canvasLoupe" v-show="isMouseEnter" />
       </div>
       <div class="colors">
         <p class="colors__descr">Кликните на фото, чтобы добавить цвет</p>
@@ -56,15 +58,12 @@ export default {
       canvas: '',
       isImage: false,
       isMouseEnter: false,
-      loupe: '',
       canvasLoupe: '',
       context: '',
-      hex: '',
       colors: [],
     };
   },
   mounted() {
-    this.loupe = this.$refs.loupe;
     this.canvas = this.$refs.canvas;
     this.canvasLoupe = this.$refs.canvasLoupe;
     this.canvas.width = 500;
@@ -74,19 +73,35 @@ export default {
   methods: {
     loupeMove(e) {
       this.isMouseEnter = true;
-
       const context = this.canvasLoupe.getContext('2d');
       const position = this.findPos(this.canvas);
-      const x = Math.min(e.pageX - position.x, 500);
-      const y = Math.min(e.pageY - position.y, 500);
+      const xPosition = e.pageX - position.x;
+      const yPosition = e.pageY - position.y;
+      const xMin = Math.min(xPosition, 500);
+      const yMin = Math.min(yPosition, 500);
 
-      if (e.pageX - position.x > 500 || e.pageY - position.y > 500) {
+      if (
+        xPosition > 500
+        || yPosition > 500
+        || xPosition < 0
+        || yPosition < 0
+      ) {
         this.isMouseEnter = false;
       }
 
-      this.loupe.style.left = `${x - 10}px`;
-      this.loupe.style.top = `${y + 15}px`;
-      context.drawImage(this.canvas, x - 10, y + 15, 16, 16, 0, 0, 100, 100);
+      this.canvasLoupe.style.left = `${xMin - 10}px`;
+      this.canvasLoupe.style.top = `${yMin + 15}px`;
+      context.drawImage(
+        this.canvas,
+        xMin - 10,
+        yMin + 15,
+        5,
+        5,
+        0,
+        0,
+        100,
+        100,
+      );
     },
     removeColor(id) {
       this.colors = this.colors.filter((it) => it.id !== id);
@@ -132,8 +147,7 @@ export default {
       const position = this.findPos(this.canvas);
       const x = e.pageX - position.x;
       const y = e.pageY - position.y;
-      const canvas = this.canvas.getContext('2d');
-      const imageData = canvas.getImageData(x, y, 1, 1).data;
+      const imageData = this.context.getImageData(x, y, 1, 1).data;
       const rgb = {
         red: imageData[0],
         green: imageData[1],
@@ -237,25 +251,18 @@ $secondColor: #d2d2d2;
   justify-content: flex-start;
   gap: 10px;
 
-  &__canvas {
+  .canvas {
     position: relative;
     width: 500px;
     height: 500px;
 
-    canvas {
-      cursor: url("assets/pipette.png"), pointer;
-    }
-    div {
+    cursor: url("assets/pipette.png"), pointer;
+    &__loupe {
       position: absolute;
-      top: 0;
-      left: 0;
-      overflow: hidden;
-
+      border: $primeColor 2px solid;
+      border-radius: 50%;
       width: 16px;
       height: 16px;
-
-      border: $primeColor solid 1px;
-      border-radius: 50%;
     }
   }
 
